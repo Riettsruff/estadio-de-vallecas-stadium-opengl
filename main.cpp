@@ -1,5 +1,6 @@
-#include <iostream>
 #include <GL/freeglut.h>
+#include <windows.h>
+#include <stdlib.h>
 
 // TOPIC - RAYO VALLECANO STADIUM
 
@@ -8,14 +9,14 @@ float yrot = 0;
 float xdiff = 0;
 float ydiff = 0;
 bool mousedown = false;
+bool isColorOneActive = false;
 
 void handleMouseButton(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		mousedown = true;
 		xdiff = x - yrot;
 		ydiff = -y + xrot;
-	}
-	else {
+	} else {
 		mousedown = false;
 	}
 
@@ -33,46 +34,46 @@ void handleMouseMove(int x, int y) {
 
 void handleKeyboard(unsigned char key, int x, int y) {
 	switch (key) {
-	case 'a':
-	case 'A':
-		// bergeser ke kiri
-		glTranslatef(-1.0, 0.0, 0.0);
-		break;
-	case 'd':
-	case 'D':
-		// bergeser ke kanan
-		glTranslatef(1.0, 0.0, 0.0);
-		break;
-	case 'w':
-	case 'W':
-		// bergeser ke atas
-		glTranslatef(0.0, 1.0, 0.0);
-		break;
-	case 's':
-	case 'S':
-		// bergeser ke bawah
-		glTranslatef(0.0, -1.0, 0.0);
-		break;
-	case 'x':
-	case 'X':
-		// berotasi ke kanan
-		glRotatef(1.0, 0.0, 0.0, -5.0);
-		break;
-	case 'z':
-	case 'Z':
-		// berotasi ke kiri
-		glRotatef(1.0, 0.0, 0.0, 5.0);
-		break;
-	case 'c':
-	case 'C':
-		// perbesar
-		glTranslatef(0.0, 0.0, 5.0);
-		break;
-	case 'v':
-	case 'V':
-		// perkecil
-		glTranslatef(0.0, 0.0, -5.0);
-		break;
+		case 'a':
+		case 'A':
+			// bergeser ke kiri
+			glTranslatef(-1.0, 0.0, 0.0);
+			break;
+		case 'd':
+		case 'D':
+			// bergeser ke kanan
+			glTranslatef(1.0, 0.0, 0.0);
+			break;
+		case 'w':
+		case 'W':
+			// bergeser ke atas
+			glTranslatef(0.0, 1.0, 0.0);
+			break;
+		case 's':
+		case 'S':
+			// bergeser ke bawah
+			glTranslatef(0.0, -1.0, 0.0);
+			break;
+		case 'x':
+		case 'X':
+			// berotasi ke kanan
+			glRotatef(1.0, 0.0, 0.0, -5.0);
+			break;
+		case 'z':
+		case 'Z':
+			// berotasi ke kiri
+			glRotatef(1.0, 0.0, 0.0, 5.0);
+			break;
+		case 'c':
+		case 'C':
+			// perbesar
+			glTranslatef(0.0, 0.0, 5.0);
+			break;
+		case 'v':
+		case 'V':
+			// perkecil
+			glTranslatef(0.0, 0.0, -5.0);
+			break;
 	}
 
 	glutPostRedisplay();
@@ -29022,6 +29023,9 @@ void display() {
 	glRotatef(xrot, 1, 0, 0);
 	glRotatef(yrot, 0, 1, 0);
 
+	if (isColorOneActive) glClearColor(0.2, 0.6, 0.7, 1.0);
+	else glClearColor(0.2, 0.4, 0.5, 1.0);
+
 	brownSmoothObjectPart1();
 	brownSmoothObjectPart2();
 	darkGreyObjectPart1();
@@ -29044,7 +29048,7 @@ void display() {
 }
 
 void initGL() {
-	glClearColor(0, 0, 0, 0);
+	glClearColor(0.3, 0.6, 0.5, 1.0);
 	glLineWidth(2);
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
@@ -29053,9 +29057,14 @@ void initGL() {
 	glDepthFunc(GL_LEQUAL);
 	glShadeModel(GL_SMOOTH);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	glMatrixMode(GL_PROJECTION);
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+}
+
+void handleTimer(int) {
+	isColorOneActive = !isColorOneActive;
+
+	glutTimerFunc(600, handleTimer, 0);
+	glutPostRedisplay();
 }
 
 int main(int argc, char** argv) {
@@ -29069,6 +29078,7 @@ int main(int argc, char** argv) {
 	glutKeyboardFunc(handleKeyboard);
 	glutMouseFunc(handleMouseButton);
 	glutMotionFunc(handleMouseMove);
+	glutTimerFunc(600, handleTimer, 10);
 
 	glutMainLoop();
 	return 0;
